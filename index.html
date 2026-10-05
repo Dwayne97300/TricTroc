@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TricTroc – Place de marché</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#17202b;--mute:#667385;--line:#dde3ea;--acc:#2447ff;--acc-ink:#fff;--ok:#1d7a4d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171e;--card:#1b222b;--ink:#eef2f6;--mute:#93a0b0;--line:#2c3541;--acc:#6f86ff;--acc-ink:#0d1220;--ok:#5ad19a}}
+:root[data-theme="dark"]{--bg:#12171e;--card:#1b222b;--ink:#eef2f6;--mute:#93a0b0;--line:#2c3541;--acc:#6f86ff;--acc-ink:#0d1220;--ok:#5ad19a}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(16px,4vw,40px);background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.logo{font-weight:800;font-size:1.4rem;letter-spacing:-.02em;margin:0}
+.nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.who{font-weight:600}
+.by{color:var(--mute);font-size:.85rem}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:10px 16px;font-weight:600}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.primary{background:var(--acc);color:var(--acc-ink)}
+.ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+main{max-width:1100px;margin:0 auto;padding:24px clamp(16px,4vw,40px) 60px}
+.bar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+h2{margin:0;font-size:1.5rem;letter-spacing:-.01em}
+.count{color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.pic{aspect-ratio:4/5;display:grid;place-items:center;font-size:3.2rem;position:relative;background:var(--tint,#e8ecf2)}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.title{margin:0;font-size:1rem;font-weight:600;overflow-wrap:anywhere}
+.price{font-weight:800;font-size:1.15rem}
+.card button{margin-top:auto}
+.sold{position:absolute;top:10px;left:10px;background:var(--ink);color:var(--bg);padding:2px 10px;border-radius:99px;font-size:.8rem;font-weight:600;z-index:1}
+.card.done .pic{opacity:.55}
+.card.done button{background:transparent;border-color:var(--line);color:var(--mute);cursor:default}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);width:min(440px,92vw);padding:22px}
+dialog::backdrop{background:rgba(10,15,22,.55)}
+form{display:grid;gap:14px}
+label{display:grid;gap:6px;font-weight:600;font-size:.92rem}
+input[type=text],input[type=number],input[type=email],input[type=password]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input[type=file]{font:inherit;color:var(--mute)}
+#preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;display:none}
+.note{margin:0;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.note[hidden]{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px}
+.chip{flex:none;background:var(--card);border:1px solid var(--line);color:var(--ink);padding:6px 14px;border-radius:99px;font-weight:600;font-size:.92rem}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.cat{font-size:.82rem;font-weight:600;color:var(--acc)}
+select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.row strong{display:block;overflow-wrap:anywhere}
+.row .meta{color:var(--mute);font-size:.9rem}
+.danger{background:transparent;border-color:#d23b3b;color:#d23b3b;flex:none}
+#admin[hidden],#shop[hidden]{display:none}
+label[hidden]{display:none}
+#bdlg p{margin:10px 0}
+#btitle{color:var(--mute)}
+.empty{grid-column:1/-1;margin:24px 0;color:var(--mute);text-align:center}
+.err{color:#d23b3b;font-size:.88rem;min-height:1.2em;margin:0}
+.actions{display:flex;justify-content:flex-end;gap:10px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="logo">TricTroc</h1>
+  <div class="nav">
+    <span class="who" id="who" hidden></span>
+    <button class="ghost" id="adm" hidden>Admin</button>
+    <button class="ghost" id="account">Créer un compte</button>
+    <button class="primary" id="open">Vendre un objet</button>
+  </div>
+</header>
+<main>
+  <div id="shop">
+  <div class="bar"><h2>Objets en vente</h2><span class="count" id="count"></span></div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrer par catégorie"></div>
+  <div class="grid" id="grid"></div>
+  </div>
+  <section id="admin" hidden>
+    <div class="bar"><h2>Espace administrateur</h2><span class="count" id="stats"></span></div>
+    <div id="rows"></div>
+  </section>
+</main>
+
+<dialog id="dlg">
+  <form id="form" method="dialog" novalidate>
+    <h2>Vendre un objet</h2>
+    <label>Titre<input type="text" id="t" maxlength="60" placeholder="Ex. Veste en jean taille M"></label>
+    <label>Prix (€)<input type="number" id="p" min="1" step="0.5" inputmode="decimal" placeholder="15"></label>
+    <label>Catégorie<select id="c"><option value="">Choisir une catégorie</option></select></label>
+    <label>Photo<input type="file" id="f" accept="image/*"></label>
+    <img id="preview" alt="Aperçu de la photo">
+    <p class="err" id="err" role="alert"></p>
+    <div class="actions">
+      <button type="button" class="ghost" id="cancel">Annuler</button>
+      <button type="submit" class="primary">Mettre en vente</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="adlg">
+  <form id="aform" method="dialog" novalidate>
+    <h2 id="atitle">Créer un compte</h2>
+    <p class="note" id="anote" hidden></p>
+    <label id="aul">Nom d'utilisateur<input type="text" id="au" maxlength="30" autocomplete="username"></label>
+    <label>E-mail<input type="email" id="ae" autocomplete="email" placeholder="nom@exemple.fr"></label>
+    <label>Mot de passe<input type="password" id="ap" autocomplete="new-password" placeholder="8 caractères minimum"></label>
+    <p class="err" id="aerr" role="alert"></p>
+    <button type="button" class="ghost" id="amode">J'ai déjà un compte</button>
+    <div class="actions">
+      <button type="button" class="ghost" id="acancel">Annuler</button>
+      <button type="submit" class="primary" id="asub">Créer mon compte</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="bdlg">
+  <h2>Acheter cet objet</h2>
+  <p id="btitle"></p>
+  <p>Pour acheter cet objet, contactez l'administrateur avec la référence <strong id="bref"></strong>.</p>
+  <div class="actions"><button type="button" class="primary" id="bclose">Fermer</button></div>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script>
+// Passer DEMO à true pour afficher des objets d'exemple
+var DEMO=false;
+var DEMO_ITEMS=[
+ {id:1,title:"Veste en jean vintage",price:28,cat:"Vêtements",emoji:"🧥",tint:"#cfe0ff"},
+ {id:2,title:"Sneakers blanches, pointure 42",price:35,cat:"Chaussures",emoji:"👟",tint:"#e4e4f0"},
+ {id:3,title:"Lampe de bureau en laiton",price:18,cat:"Maison",emoji:"💡",tint:"#ffe8b8"},
+ {id:4,title:"Sac à dos de randonnée 30 L",price:42,cat:"Sport",emoji:"🎒",tint:"#cdeede"},
+ {id:5,title:"Lot de 6 romans policiers",price:12,cat:"Livres",emoji:"📚",tint:"#f6d4d4"}
+];
+var KEY="trictroc_items_v1",SKEY="trictroc_session_v1";
+function load(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+var CATS=["Vêtements","Chaussures","Maison","Livres","Électronique","Sport","Autres"];
+var cur="Tout";
+var items=load(KEY)||(DEMO?DEMO_ITEMS.slice():[]);
+items.forEach(function(i){if(!i.ref)i.ref="TT-"+String(i.id).padStart(4,"0")});
+var nextId=items.reduce(function(m,i){return Math.max(m,i.id||0)},0)+1,photo=null,user=null,isAdmin=false;
+var $=function(id){return document.getElementById(id)};
+var grid=$("grid"),dlg=$("dlg");
+
+function toast(msg){var t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove("show")},2200)}
+function fmt(n){return n.toLocaleString("fr-FR",{minimumFractionDigits:0,maximumFractionDigits:2})+" €"}
+
+function render(){
+  grid.textContent="";
+  var list=cur==="Tout"?items:items.filter(function(i){return i.cat===cur});
+  renderChips();
+  if(!list.length){
+    var em=document.createElement("p");em.className="empty";
+    em.textContent=items.length?"Aucun objet dans cette catégorie pour le moment.":"Aucun objet en vente pour le moment. Soyez le premier à vendre quelque chose.";
+    grid.appendChild(em);
+  }
+  list.forEach(function(it){
+    var c=document.createElement("article");c.className="card";
+    var pic=document.createElement("div");pic.className="pic";pic.style.setProperty("--tint",it.tint||"#e8ecf2");
+    if(it.photo){var im=document.createElement("img");im.src=it.photo;im.alt=it.title;pic.appendChild(im)}else{pic.textContent=it.emoji||"📦"}
+    var b=document.createElement("div");b.className="body";
+    var h=document.createElement("h3");h.className="title";h.textContent=it.title;
+    var by=null;if(it.seller){by=document.createElement("div");by.className="by";by.textContent="Vendu par "+it.seller}
+    var p=document.createElement("div");p.className="price";p.textContent=fmt(it.price);
+    var btn=document.createElement("button");btn.className="primary";
+    btn.textContent="Acheter";
+    btn.addEventListener("click",function(){
+      if(!user){needAccount("Créez un compte pour acheter cet objet.",function(){buy(it)});return}
+      buy(it);
+    });
+    var ct=document.createElement("div");ct.className="cat";ct.textContent=it.cat||"";
+    var rf=document.createElement("div");rf.className="by";rf.textContent="Réf. "+it.ref;
+    var parts=[h];if(it.cat)parts.push(ct);if(by)parts.push(by);parts.push(rf,p,btn);b.append.apply(b,parts);c.append(pic,b);grid.appendChild(c);
+  });
+  var n=list.length;
+  $("count").textContent=n+(n>1?" objets disponibles":" objet disponible");
+}
+
+function renderChips(){
+  var box=$("chips");box.textContent="";
+  ["Tout"].concat(CATS).forEach(function(name){
+    var c=document.createElement("button");c.type="button";c.className="chip";c.textContent=name;
+    c.setAttribute("aria-pressed",String(cur===name));
+    c.addEventListener("click",function(){cur=name;render()});
+    box.appendChild(c);
+  });
+}
+CATS.forEach(function(name){var o=document.createElement("option");o.value=name;o.textContent=name;$("c").appendChild(o)});
+function reset(){$("form").reset();photo=null;$("preview").style.display="none";$("err").textContent=""}
+function buy(it){$("btitle").textContent=it.title;$("bref").textContent=it.ref;$("bdlg").showModal()}
+$("bclose").addEventListener("click",function(){$("bdlg").close()});
+function openSell(){reset();dlg.showModal();$("t").focus()}
+$("open").addEventListener("click",function(){
+  if(!user){needAccount("Créez un compte pour vendre un objet.",openSell);return}
+  openSell();
+});
+$("cancel").addEventListener("click",function(){dlg.close()});
+$("f").addEventListener("change",function(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      var k=Math.min(1,600/Math.max(img.width,img.height)),cv=document.createElement("canvas");
+      cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      photo=cv.toDataURL("image/jpeg",0.75);
+      var pv=$("preview");pv.src=photo;pv.style.display="block";
+    };
+    img.src=r.result;
+  };
+  r.readAsDataURL(file);
+});
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+  var title=$("t").value.trim(),price=parseFloat($("p").value);
+  if(!title){$("err").textContent="Ajoutez un titre pour votre objet.";return}
+  if(!(price>0)){$("err").textContent="Indiquez un prix supérieur à 0 €.";return}
+  var cat=$("c").value;
+  if(!cat){$("err").textContent="Choisissez une catégorie.";return}
+  var id=nextId++;
+  items.unshift({id:id,ref:"TT-"+String(id).padStart(4,"0"),title:title,price:price,cat:cat,photo:photo,emoji:"📦",seller:user});
+  if(!save(KEY,items)){items.shift();toast("Stockage plein : choisissez une photo plus légère");return}
+  dlg.close();render();toast("Mise en vente : "+title);
+});
+var adlg=$("adlg");
+function nav(){
+  var w=$("who"),a=$("account");
+  w.hidden=!user;w.textContent=user||"";
+  a.textContent=user?"Se déconnecter":"Créer un compte";
+  $("adm").hidden=!isAdmin;
+}
+$("account").addEventListener("click",function(){
+  if(user){user=null;isAdmin=false;try{localStorage.removeItem(SKEY)}catch(e){}if(admin){admin=false;setView()}nav();render();toast("Vous êtes déconnecté");return}
+  needAccount("",null);
+});
+var loginMode=false;
+function setMode(l){
+  loginMode=l;$("aul").hidden=l;
+  $("atitle").textContent=l?"Se connecter":"Créer un compte";
+  $("asub").textContent=l?"Se connecter":"Créer mon compte";
+  $("amode").textContent=l?"Créer un compte":"J'ai déjà un compte";
+  $("ap").autocomplete=l?"current-password":"new-password";
+}
+$("amode").addEventListener("click",function(){setMode(!loginMode);$("aerr").textContent=""});
+var pending=null;
+function needAccount(msg,then){
+  setMode(false);pending=then;$("aform").reset();$("aerr").textContent="";
+  var n=$("anote");n.hidden=!msg;n.textContent=msg;
+  adlg.showModal();$("au").focus();
+}
+$("acancel").addEventListener("click",function(){pending=null;adlg.close()});
+$("aform").addEventListener("submit",function(e){
+  e.preventDefault();
+  var m=$("ae").value.trim(),pw=$("ap").value,u=loginMode?m.split("@")[0]:$("au").value.trim();
+  if(!u){$("aerr").textContent="Choisissez un nom d'utilisateur.";return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)){$("aerr").textContent="Saisissez une adresse e-mail valide.";return}
+  if(pw.length<8){$("aerr").textContent="Le mot de passe doit contenir au moins 8 caractères.";return}
+  user=u;isAdmin=ADMIN_EMAILS.indexOf(m.toLowerCase())>=0;save(SKEY,{user:u,email:m});adlg.close();nav();toast("Bienvenue, "+u+" !");
+  var go=pending;pending=null;if(go)go();
+});
+var ADMIN_EMAILS=["dwayne.fabien13@gmail.com"],admin=false;
+function setView(){
+  $("shop").hidden=admin;$("admin").hidden=!admin;
+  $("open").hidden=admin;$("account").hidden=admin;
+  $("adm").textContent=admin?"Quitter l'admin":"Admin";
+  if(admin)renderAdmin();
+}
+function renderAdmin(){
+  var box=$("rows");box.textContent="";
+  $("stats").textContent=items.length+" annonce"+(items.length>1?"s":"");
+  if(!items.length){var e=document.createElement("p");e.className="empty";e.textContent="Aucune annonce à gérer pour le moment.";box.appendChild(e);return}
+  items.forEach(function(it){
+    var r=document.createElement("div");r.className="row";
+    var t=document.createElement("div");
+    var n=document.createElement("strong");n.textContent=it.title;
+    var m=document.createElement("span");m.className="meta";
+    m.textContent=it.ref+", "+(it.cat||"Sans catégorie")+", "+(it.seller?"par "+it.seller:"vendeur inconnu")+", "+fmt(it.price);
+    t.append(n,m);
+    var b=document.createElement("button");b.className="danger";b.textContent="Retirer";
+    b.setAttribute("aria-label","Retirer l'annonce : "+it.title);
+    b.addEventListener("click",function(){items=items.filter(function(x){return x!==it});save(KEY,items);render();renderAdmin();toast("Annonce retirée")});
+    r.append(t,b);box.appendChild(r);
+  });
+}
+$("adm").addEventListener("click",function(){
+  if(!isAdmin)return;
+  admin=!admin;setView();if(!admin)render();
+});
+var sess=load(SKEY);
+if(sess&&sess.user){user=sess.user;isAdmin=ADMIN_EMAILS.indexOf((sess.email||"").toLowerCase())>=0}
+nav();render();
+</script>
+</body>
+</html>
